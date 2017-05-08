@@ -4,8 +4,8 @@ install_software(){
   initialize
   pre_install
   printf "\nInstalling...\n"
-  sudo apt-get update && \
-  sudo apt-get install $new_software -y
+  apt-get update && \
+  apt-get install $new_software -y
   misc_software
 }
 
@@ -23,8 +23,8 @@ initialize(){
 pre_install(){
   printf "\nPre-install...\n"
   if not_installed curl; then
-    sudo apt-get update && \
-    sudo apt-get install curl -y
+    apt-get update && \
+    apt-get install curl -y
   fi
   install_node
   install_repositories
@@ -38,7 +38,7 @@ install_repositories(){
   readarray repos < $repositories
     for repo in "${repos[@]}"; do
       if chkarg $repo && repo_not_installed $repo; then
-        sudo apt-add-repository $repo -y
+        apt-add-repository $repo -y
       fi
     done    
 }
@@ -57,7 +57,7 @@ misc_software(){
   git clone https://github.com/mprather1/ssh_tool.git bin/ssh_tool
   install_npm_packages
   install_cloud9
-  sudo usermod -aG docker $(whoami)
+  usermod -aG docker $(whoami)
   
   case $software_type in 
     "desktop")
@@ -72,15 +72,15 @@ misc_software(){
     ;;
   esac
   
-  sudo apt-get upgrade -y  
+  apt-get upgrade -y  
 }
 
 misc_repos(){
   printf "\nInstalling miscellaneous repositories...\n"
 
   if not_installed yarn; then
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -  
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list      
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -  
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list      
   fi
   
   case $software_type in
@@ -97,8 +97,8 @@ misc_repos(){
 
 install_docker(){
   if not_installed docker-engine; then
-    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
+    apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
   fi
   
   if [ -d /usr/local/bin ] && [ ! -f /usr/local/bin/docker-compose ]; then
@@ -106,14 +106,14 @@ install_docker(){
     sleep 1
     mkdir tmp
      curl -L https://github.com/docker/compose/releases/download/1.12.0-rc2/docker-compose-`uname -s`-`uname -m` > tmp/docker-compose
-    sudo cp tmp/* /usr/local/bin/ && \
-    sudo  chmod +x /usr/local/bin/docker-compose && \
+    cp tmp/* /usr/local/bin/ && \
+     chmod +x /usr/local/bin/docker-compose && \
     rm -rv tmp
   fi
 }
 
 install_local_packages(){
-  sudo dpkg -i $(directory)/misc/synergy.deb $(directory)/misc/xscreensaver.deb
+  dpkg -i $(directory)/misc/synergy.deb $(directory)/misc/xscreensaver.deb
 }
 
 install_ruby_gems(){
@@ -132,7 +132,7 @@ install_node(){
     mkdir temp
     wget $node_version -O temp/node.tar.xz
     tar -xvf temp/node.tar.xz -C temp/
-    sudo cp -R temp/$node_directory/* /usr/local/
+    cp -R temp/$node_directory/* /usr/local/
     rm -rvf temp
   else
     printf "\nnode is already installed\nskipping..."
